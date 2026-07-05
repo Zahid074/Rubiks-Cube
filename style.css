@@ -1,0 +1,301 @@
+:root {
+  --bg-top: #0f1420;
+  --bg-bottom: #04060a;
+  --accent: #4fd1ff;
+  --text: #eaf6ff;
+  --muted: #7c93a8;
+  --solved: #34e28a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 20%, var(--bg-top) 0%, var(--bg-bottom) 75%);
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--text);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* ---------- Canvas ---------- */
+#cube-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none; /* prevent mobile scroll/zoom while dragging the cube */
+}
+
+/* ---------- Confetti burst layer ---------- */
+#confetti-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* ---------- HUD (timer / moves / best time) ---------- */
+#hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: clamp(18px, 6vw, 64px);
+  padding: clamp(14px, 3vh, 28px) 16px 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.hud-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(9px, 1.6vw, 12px);
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.hud-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(20px, 4.5vw, 32px);
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 0 18px rgba(79, 209, 255, 0.45);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Overlays (start screen / solved screen) ---------- */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  z-index: 10;
+  padding: 20px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(4, 8, 14, 0.15) 0%, rgba(2, 4, 8, 0.55) 100%);
+  transition: opacity 0.5s ease;
+  pointer-events: auto;
+}
+
+.overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: clamp(38px, 11vw, 88px);
+  letter-spacing: 0.12em;
+  background: linear-gradient(180deg, #ffffff 0%, #9fd8ff 60%, #4fd1ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 30px rgba(79, 209, 255, 0.35));
+}
+
+.subtitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(12px, 3vw, 18px);
+  letter-spacing: 0.3em;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.blink {
+  animation: blink-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes blink-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+/* ---------- Solved banner ---------- */
+.solved-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: clamp(34px, 10vw, 76px);
+  letter-spacing: 0.1em;
+  color: var(--solved);
+  text-shadow: 0 0 34px rgba(52, 226, 138, 0.55);
+  animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.solved-time {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(22px, 6vw, 40px);
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.new-best {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(12px, 3vw, 16px);
+  letter-spacing: 0.2em;
+  color: #ffd75e;
+  text-shadow: 0 0 20px rgba(255, 215, 94, 0.6);
+}
+
+.solved-moves {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(13px, 3vw, 17px);
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+@keyframes pop-in {
+  0%   { transform: scale(0.4); opacity: 0; }
+  70%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ---------- Auto-solving banner ---------- */
+.solving-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: clamp(24px, 6vw, 46px);
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-shadow: 0 0 24px rgba(79, 209, 255, 0.5);
+  animation: solving-pulse 1s ease-in-out infinite;
+}
+
+@keyframes solving-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* ---------- Bottom hint ---------- */
+.hint {
+  position: absolute;
+  bottom: clamp(78px, 13vh, 100px);
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: clamp(10px, 2.2vw, 13px);
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  opacity: 0.65;
+  z-index: 4;
+  pointer-events: none;
+  padding: 0 12px;
+}
+
+/* ---------- Bottom toolbar (Undo / Scramble / Auto-Solve) ---------- */
+.toolbar {
+  position: absolute;
+  bottom: clamp(14px, 3vh, 28px);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(10px, 3vw, 20px);
+  z-index: 6;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.toolbar.hidden {
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+
+.tool-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: clamp(64px, 18vw, 92px);
+  padding: clamp(8px, 1.6vh, 12px) clamp(10px, 2.5vw, 16px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(20, 26, 38, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.tool-btn:hover {
+  background: rgba(30, 40, 56, 0.8);
+  border-color: rgba(79, 209, 255, 0.4);
+}
+
+.tool-btn:active {
+  transform: scale(0.92);
+}
+
+.tool-btn--accent {
+  border-color: rgba(255, 212, 0, 0.5);
+}
+
+.tool-btn--accent:hover {
+  border-color: #ffd400;
+  box-shadow: 0 0 18px rgba(255, 212, 0, 0.35);
+}
+
+.tool-icon {
+  font-size: clamp(18px, 4.5vw, 24px);
+  line-height: 1;
+}
+
+.tool-label {
+  font-size: clamp(9px, 2vw, 11px);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 480px) {
+  #hud {
+    gap: 22px;
+  }
+  .hint {
+    display: none; /* keep small screens uncluttered */
+  }
+  .toolbar {
+    gap: 8px;
+  }
+}
+
+@media (max-height: 420px) {
+  .title { font-size: 34px; }
+  .subtitle { font-size: 11px; }
+}

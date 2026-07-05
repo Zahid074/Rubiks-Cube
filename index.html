@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>THE CUBE — 3D Rubik's Cube</title>
+
+<!-- Font for the HUD / titles -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css" />
+
+<!--
+  Import map: lets us use bare "three" / "three/addons/..." specifiers
+  in script.js while actually pulling the files from a CDN (unpkg).
+  No build step / npm install required — just open with Live Server.
+-->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- The Three.js renderer is attached to this canvas -->
+    <canvas id="cube-canvas"></canvas>
+
+    <!-- Confetti burst layer (shown on a genuine solve) -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Top HUD: timer + move counter + best time -->
+    <div id="hud">
+      <div class="hud-item">
+        <span class="hud-label">Time</span>
+        <span id="timer" class="hud-value">00:00.0</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Moves</span>
+        <span id="move-count" class="hud-value">0</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Best</span>
+        <span id="best-time" class="hud-value">--:--.-</span>
+      </div>
+    </div>
+
+    <!-- Idle / start screen -->
+    <div id="start-overlay" class="overlay">
+      <h1 class="title">THE CUBE</h1>
+      <p class="subtitle blink">DOUBLE TAP TO START</p>
+    </div>
+
+    <!-- Solved screen -->
+    <div id="solved-banner" class="overlay hidden">
+      <h1 class="solved-title">SOLVED!</h1>
+      <p id="solved-time" class="solved-time">00:00.0</p>
+      <p id="solved-moves" class="solved-moves">in 0 moves</p>
+      <p id="new-best-tag" class="new-best hidden">★ NEW BEST TIME ★</p>
+      <p class="subtitle blink">DOUBLE TAP TO PLAY AGAIN</p>
+    </div>
+
+    <!-- Auto-solve status banner -->
+    <div id="solving-banner" class="overlay hidden">
+      <h1 class="solving-title">AUTO-SOLVING…</h1>
+      <p class="subtitle">unwinding every move</p>
+    </div>
+
+    <!-- Small persistent control hint -->
+    <p id="hint" class="hint">Drag a cube face to turn a layer &nbsp;•&nbsp; One finger / mouse-drag empty space to look around &nbsp;•&nbsp; Two fingers to orbit &amp; zoom on mobile</p>
+
+    <!-- Bottom toolbar: shown once the game is actually running -->
+    <div id="toolbar" class="toolbar hidden">
+      <button id="btn-undo" class="tool-btn" title="Undo last move" aria-label="Undo">
+        <span class="tool-icon">↺</span><span class="tool-label">Undo</span>
+      </button>
+      <button id="btn-scramble" class="tool-btn" title="Re-scramble" aria-label="Scramble">
+        <span class="tool-icon">🔀</span><span class="tool-label">Scramble</span>
+      </button>
+      <button id="btn-solve" class="tool-btn tool-btn--accent" title="Auto-solve the cube" aria-label="Auto Solve">
+        <span class="tool-icon">⚡</span><span class="tool-label">Auto-Solve</span>
+      </button>
+    </div>
+
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
